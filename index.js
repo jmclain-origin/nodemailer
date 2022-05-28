@@ -1,12 +1,39 @@
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config()
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
-const express = require('express')
-const app = express()
-const PORT = process.env.PORT
-
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT;
+const nodemailer = require("nodemailer");
 
 app.listen(PORT, () => {
-  console.log(`nodemailerProject is listening at http://localhost:${PORT}`)
-})
+  console.log(`nodemailerProject is listening at http://localhost:${PORT}`);
+});
+
+let transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    type: "OAuth2",
+    user: process.env.MAIL_USERNAME,
+    pass: process.env.MAIL_PASSWORD,
+    clientId: process.env.OAUTH_CLIENTID,
+    clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+  },
+});
+
+let mailOptions = {
+    from: 'joshmclain45@gmail.com',
+    to: 'jrmclain85@gmail.com',
+    subject: 'Nodemailer Project',
+    text: 'Hi from your nodemailer project'
+  };
+
+  transporter.sendMail(mailOptions, function(err, data) {
+    if (err) {
+      console.log("Error " + err);
+    } else {
+      console.log("Email sent successfully");
+    }
+  });
