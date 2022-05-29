@@ -7,11 +7,16 @@ const app = express();
 const PORT = process.env.PORT;
 const nodemailer = require("nodemailer");
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 app.listen(PORT, () => {
-  console.log(`nodemailerProject is listening at http://localhost:${PORT}`);
+  console.log(
+    `nodemailerProject is listening at ${PORT} and running in ${process.env.NODE_ENV}mode`
+  );
 });
 
-let transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     type: "OAuth2",
@@ -23,17 +28,25 @@ let transporter = nodemailer.createTransport({
   },
 });
 
-let mailOptions = {
-    from: 'joshmclain45@gmail.com',
-    to: 'jrmclain85@gmail.com',
-    subject: 'Nodemailer Project',
-    text: 'Hi from your nodemailer project'
+app.post("/send-email", (req, res) => {
+  const mailOptions = {
+    from: "joshmclain@no-reply.com",
+    to: ["jrmclain85@gmail.com"],
+    subject: "Nodemailer Project",
+    text: "Hi from your nodemailer project",
   };
 
-  transporter.sendMail(mailOptions, function(err, data) {
+  transporter.sendMail(mailOptions, function (err, data) {
+    console.log(data);
     if (err) {
       console.log("Error " + err);
+      throw err;
     } else {
       console.log("Email sent successfully");
+
+      return;
     }
   });
+
+  return res.json({ msg: 'email sent' }).status(200);
+});
